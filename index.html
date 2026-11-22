@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#3b0d1e" />
+  <title>Feliz Día del Músico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #220611;
+      --bg-mid: #4a1026;
+      --gold: #f5cb7a;
+      --gold-soft: rgba(245, 203, 122, 0.28);
+      --cream: #fff7ec;
+      --text-soft: rgba(255, 247, 236, 0.84);
+      --card-bg: rgba(34, 6, 17, 0.78);
+      --card-border: rgba(245, 203, 122, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100dvh;
+      width: 100%;
+      overflow-x: hidden;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--cream);
+      background:
+        radial-gradient(circle at 50% 18%, rgba(245, 203, 122, 0.16), transparent 48%),
+        radial-gradient(circle at 18% 85%, rgba(168, 36, 78, 0.35), transparent 55%),
+        radial-gradient(circle at 85% 80%, rgba(245, 203, 122, 0.12), transparent 50%),
+        linear-gradient(160deg, var(--bg-dark) 0%, var(--bg-mid) 52%, #290714 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 18px;
+      position: relative;
+    }
+
+    .floating-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .note-float {
+      position: absolute;
+      bottom: -40px;
+      color: var(--gold);
+      opacity: 0;
+      font-size: 20px;
+      animation: floatUp linear infinite;
+      filter: drop-shadow(0 0 8px rgba(245, 203, 122, 0.35));
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.85);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.45;
+      }
+      50% {
+        transform: translateY(-50vh) translateX(14px) rotate(12deg) scale(1);
+        opacity: 0.35;
+      }
+      85% {
+        opacity: 0.2;
+      }
+      100% {
+        transform: translateY(-108vh) translateX(-12px) rotate(-10deg) scale(0.95);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 430px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255, 247, 236, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.5rem, 10vw, 3.35rem);
+      font-weight: 700;
+      line-height: 1.04;
+      color: var(--cream);
+      text-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
+      margin-bottom: 10px;
+    }
+
+    .hero-title span {
+      display: block;
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-soft);
+      max-width: 310px;
+      line-height: 1.5;
+      margin-bottom: 34px;
+    }
+
+    .trigger-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 6px 0 18px;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+    }
+
+    .trigger-wrap.hidden {
+      opacity: 0;
+      transform: scale(0.75);
+      pointer-events: none;
+      position: absolute;
+      visibility: hidden;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      width: 156px;
+      height: 156px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      opacity: 0;
+      animation: pulseWave 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      pointer-events: none;
+    }
+
+    .pulse-ring:nth-child(2) {
+      animation-delay: 1.2s;
+    }
+
+    @keyframes pulseWave {
+      0% {
+        transform: scale(0.88);
+        opacity: 0.65;
+      }
+      100% {
+        transform: scale(1.42);
+        opacity: 0;
+      }
+    }
+
+    .action-btn {
+      position: relative;
+      width: 152px;
+      height: 152px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(245, 203, 122, 0.65);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255, 247, 236, 0.22), transparent 55%),
+        linear-gradient(145deg, #982248 0%, #581129 65%, #370918 100%);
+      box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.5),
+        0 0 28px rgba(245, 203, 122, 0.22),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+      color: var(--cream);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.04);
+      box-shadow:
+        0 20px 44px rgba(0, 0, 0, 0.55),
+        0 0 36px rgba(245, 203, 122, 0.34);
+    }
+
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+
+    .heart-icon {
+      font-size: 2.1rem;
+      line-height: 1;
+      color: var(--gold);
+      filter: drop-shadow(0 2px 10px rgba(245, 203, 122, 0.45));
+      animation: heartbeat 1.7s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.18); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.12); }
+      70% { transform: scale(1); }
+    }
+
+    .btn-label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--cream);
+      text-transform: uppercase;
+    }
+
+    .btn-sub {
+      font-size: 0.72rem;
+      color: var(--gold);
+      opacity: 0.9;
+    }
+
+    .letter-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 26px;
+      padding: 30px 24px 26px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 247, 236, 0.14);
+      display: none;
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+      transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .letter-card.visible {
+      display: block;
+    }
+
+    .letter-card.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--gold);
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 18px;
+      opacity: 0.85;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      width: 44px;
+      background: linear-gradient(90deg, transparent, var(--gold-soft));
+    }
+
+    .divider::after {
+      background: linear-gradient(270deg, transparent, var(--gold-soft));
+    }
+
+    .main-phrase {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1.55rem, 6.2vw, 2.05rem);
+      font-weight: 600;
+      line-height: 1.32;
+      color: var(--cream);
+      margin-bottom: 24px;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .sign-off {
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.01em;
+      margin-bottom: 18px;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      background: rgba(255, 247, 236, 0.08);
+      border: 1px solid rgba(245, 203, 122, 0.35);
+      color: var(--cream);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 8px 15px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .mini-btn:hover {
+      background: rgba(245, 203, 122, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .burst-item {
+      position: fixed;
+      pointer-events: none;
+      z-index: 20;
+      font-size: 20px;
+      animation: burstOut 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes burstOut {
+      0% {
+        transform: translate(-50%, -50%) scale(0.4) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.25) rotate(var(--rot));
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgMusic" loop preload="auto">
+    <source src="Musica1.mp3" type="audio/mpeg" />
+    <source src="Musica1.m4a" type="audio/mp4" />
+  </audio>
+
+  <div class="floating-layer" id="floatingLayer" aria-hidden="true"></div>
+
+  <main class="container">
+    <div class="badge">♪ Feliz Día ♪</div>
+    <h1 class="hero-title">Feliz Día <span>del Músico</span></h1>
+    <p class="subtitle">Tengo algo especial preparado para ti en este día.</p>
+
+    <div class="trigger-wrap" id="triggerWrap">
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <button class="action-btn" id="openBtn" type="button" aria-label="Pulse aquí para ver el mensaje">
+        <span class="heart-icon">♥</span>
+        <span class="btn-label">Pulse aquí</span>
+        <span class="btn-sub">toca para abrir</span>
+      </button>
+    </div>
+
+    <section class="letter-card" id="letterCard" aria-live="polite">
+      <div class="divider">♪ ♥ ♪</div>
+      <p class="main-phrase">
+        “De todas las canciones que he escuchado en mi vida, tu voz sigue siendo mi melodía favorita.”
+      </p>
+      <p class="sign-off">Te quiero mucho mi Biscoshito ♥</p>
+      <div class="controls-row">
+        <button class="mini-btn" id="musicBtn" type="button">♪ Pausar música</button>
+        <button class="mini-btn" id="replayBtn" type="button">♥ Repetir sorpresa</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const floatingLayer = document.getElementById('floatingLayer');
+    const openBtn = document.getElementById('openBtn');
+    const triggerWrap = document.getElementById('triggerWrap');
+    const letterCard = document.getElementById('letterCard');
+    const replayBtn = document.getElementById('replayBtn');
+    const musicBtn = document.getElementById('musicBtn');
+    const bgMusic = document.getElementById('bgMusic');
+
+    const symbols = ['♪', '♫', '♩', '♥', '♬'];
+    for (let i = 0; i < 16; i++) {
+      const el = document.createElement('span');
+      el.className = 'note-float';
+      el.textContent = symbols[i % symbols.length];
+      el.style.left = `${(i * 6.5 + (i % 3) * 2) % 96}%`;
+      el.style.fontSize = `${15 + (i % 4) * 5}px`;
+      el.style.animationDuration = `${8 + (i % 5) * 2.2}s`;
+      el.style.animationDelay = `${-(i * 1.1)}s`;
+      floatingLayer.appendChild(el);
+    }
+
+    function playSong() {
+      if (!bgMusic) return;
+      bgMusic.play().then(() => {
+        musicBtn.textContent = '♪ Pausar música';
+      }).catch(() => {
+        musicBtn.textContent = '♪ Reproducir música';
+      });
+    }
+
+    function spawnBurst(originX, originY) {
+      const burstChars = ['♥', '♪', '♫', '✨', '♥'];
+      const count = 24;
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('span');
+        particle.className = 'burst-item';
+        particle.textContent = burstChars[i % burstChars.length];
+        particle.style.left = `${originX}px`;
+        particle.style.top = `${originY}px`;
+        particle.style.color = i % 2 === 0 ? '#f5cb7a' : '#ff9ebb';
+
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.35;
+        const distance = 75 + Math.random() * 125;
+        const dx = `${Math.cos(angle) * distance}px`;
+        const dy = `${Math.sin(angle) * distance - 20}px`;
+        const rot = `${(Math.random() - 0.5) * 90}deg`;
+
+        particle.style.setProperty('--dx', dx);
+        particle.style.setProperty('--dy', dy);
+        particle.style.setProperty('--rot', rot);
+
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1200);
+      }
+    }
+
+    function revealMessage(e) {
+      const rect = openBtn.getBoundingClientRect();
+      const x = e && e.clientX ? e.clientX : rect.left + rect.width / 2;
+      const y = e && e.clientY ? e.clientY : rect.top + rect.height / 2;
+
+      playSong();
+      spawnBurst(x, y);
+
+      triggerWrap.classList.add('hidden');
+      letterCard.classList.add('visible');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          letterCard.classList.add('show');
+        });
+      });
+    }
+
+    openBtn.addEventListener('click', revealMessage);
+
+    musicBtn.addEventListener('click', () => {
+      if (!bgMusic) return;
+      if (bgMusic.paused) {
+        bgMusic.play().catch(() => {});
+        musicBtn.textContent = '♪ Pausar música';
+      } else {
+        bgMusic.pause();
+        musicBtn.textContent = '♪ Reproducir música';
+      }
+    });
+
+    replayBtn.addEventListener('click', () => {
+      const rect = letterCard.getBoundingClientRect();
+      spawnBurst(rect.left + rect.width / 2, rect.top + 60);
+      letterCard.classList.remove('show');
+      setTimeout(() => {
+        letterCard.classList.remove('visible');
+        triggerWrap.classList.remove('hidden');
+      }, 350);
+    });
+  </script>
+</body>
+</html>
