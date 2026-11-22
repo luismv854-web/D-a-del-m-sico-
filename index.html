@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Metadatos Open Graph para que al compartir el enlace por WhatsApp se vea una vista previa romántica -->
+    <meta property="og:title" content="¡Feliz Día del Músico! 🎶❤️">
+    <meta property="og:description" content="Tengo una pequeña sorpresa musical para ti... Pulsa para abrir.">
+    <meta property="og:type" content="website">
+    <title>¡Feliz Día del Músico! 🎶</title>
+
+    <!-- Tailwind CSS para estilos responsivos rápidos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts ligeras y elegantes: Playfair Display para títulos románticos y Plus Jakarta Sans para lectura clara -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tone.js para reproducir una suave melodía de arpa/piano sintetizada al abrir la carta (sin archivos externos pesados) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+        /* Variables de color cálidas: Borgoña profundo, dorado suave y rosa empolvado */
+        :root {
+            --bg-dark: #1d0a12;
+            --bg-mid: #3a1122;
+            --gold: #f5d08a;
+            --gold-light: #fff0cc;
+            --rose: #ff7597;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100dvh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% 25%, #4a152b 0%, #260b16 55%, #14050b 100%);
+            color: #fff6f8;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .font-serif-romantic {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Brillo dorado metálico en el título */
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #fff3d1 0%, #f3c677 45%, #d99b43 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 24px rgba(243, 198, 119, 0.22);
+        }
+
+        /* Contenedor de notas musicales flotantes en el fondo */
+        #bg-notes-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .floating-bg-note {
+            position: absolute;
+            bottom: -40px;
+            color: rgba(245, 208, 138, 0.16);
+            user-select: none;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.25;
+            }
+            85% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(-110vh) rotate(25deg) scale(1.15);
+                opacity: 0;
+            }
+        }
+
+        /* Botón central interactivo tipo Vinilo + Corazón Musical */
+        .vinyl-btn-wrapper {
+            position: relative;
+            width: 176px;
+            height: 176px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10;
+        }
+
+        .vinyl-btn-wrapper:active {
+            transform: scale(0.93);
+        }
+
+        /* Ondas musicales pulsantes alrededor del botón */
+        .pulse-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 9999px;
+            border: 1.5px solid rgba(245, 208, 138, 0.45);
+            animation: pulseWave 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+            pointer-events: none;
+        }
+
+        .pulse-ring:nth-child(2) {
+            animation-delay: 1.3s;
+        }
+
+        @keyframes pulseWave {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.85;
+            }
+            100% {
+                transform: scale(1.48);
+                opacity: 0;
+            }
+        }
+
+        /* Disco / Medallón central brillante */
+        .vinyl-disc {
+            width: 164px;
+            height: 164px;
+            border-radius: 9999px;
+            background:
+                radial-gradient(circle at center, #781d42 0%, #4e112b 44%, #1f0812 46%, #2e0d1b 55%, #1a060e 65%, #381021 76%, #18050d 100%);
+            box-shadow:
+                0 14px 35px rgba(0, 0, 0, 0.65),
+                0 0 28px rgba(255, 117, 151, 0.28),
+                inset 0 0 0 2px rgba(245, 208, 138, 0.55);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Reflejo de luz giratorio sobre el disco */
+        .vinyl-disc::before {
+            content: "";
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(255, 240, 204, 0.14) 35deg,
+                transparent 75deg,
+                transparent 180deg,
+                rgba(255, 117, 151, 0.14) 215deg,
+                transparent 255deg
+            );
+            animation: spinSlow 9s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes spinSlow {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Etiqueta central cálida del disco */
+        .vinyl-label {
+            width: 96px;
+            height: 96px;
+            border-radius: 9999px;
+            background: linear-gradient(145deg, #ff7597 0%, #c92a5b 55%, #8f163b 100%);
+            border: 2px solid #f5d08a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .heartbeat-icon {
+            animation: heartBeat 1.6s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.18); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.12); }
+            60% { transform: scale(1); }
+        }
+
+        /* Transición de salida del botón y entrada de la carta */
+        .fade-out-scale {
+            opacity: 0;
+            transform: scale(0.82) translateY(-10px);
+            pointer-events: none;
+            transition: opacity 0.45s ease, transform 0.45s ease;
+        }
+
+        /* Tarjeta / Carta romántica */
+        .love-letter-card {
+            background: linear-gradient(165deg, rgba(255, 249, 245, 0.97) 0%, rgba(255, 237, 241, 0.96) 100%);
+            color: #3b1020;
+            border-radius: 26px;
+            border: 1.5px solid rgba(245, 208, 138, 0.85);
+            box-shadow:
+                0 22px 50px rgba(0, 0, 0, 0.55),
+                0 0 35px rgba(255, 117, 151, 0.25),
+                inset 0 0 0 5px rgba(255, 255, 255, 0.65);
+            opacity: 0;
+            transform: translateY(28px) scale(0.94);
+            transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+
+        .love-letter-card.revealed {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Línea decorativa dorada en la carta */
+        .gold-divider {
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent 0%, #d49b42 50%, transparent 100%);
+        }
+
+        /* Partículas explosivas al tocar */
+        .burst-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            user-select: none;
+            will-change: transform, opacity;
+        }
+    </style>
+</head>
+<body class="px-5 py-8 selection:bg-rose-300 selection:text-rose-950">
+
+    <!-- Fondo animado con notas musicales sutiles -->
+    <div id="bg-notes-container" aria-hidden="true"></div>
+
+    <!-- Contenedor principal adaptado a pantalla móvil -->
+    <main class="relative z-10 w-full max-w-md mx-auto flex flex-col items-center text-center">
+
+        <!-- Detalle superior decorativo -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-amber-200/25 backdrop-blur-sm mb-4">
+            <span class="text-amber-300 text-xs">♪</span>
+            <span class="text-[11px] uppercase tracking-[0.2em] text-amber-100/90 font-medium">22 de Noviembre</span>
+            <span class="text-amber-300 text-xs">♫</span>
+        </div>
+
+        <!-- Encabezado elegante -->
+        <header class="mb-7">
+            <h1 class="font-serif-romantic text-4xl sm:text-5xl font-bold leading-tight gold-text-gradient tracking-tight">
+                ¡Feliz Día del Músico!
+            </h1>
+            <p class="mt-2.5 text-sm sm:text-base text-rose-100/80 font-normal max-w-xs mx-auto leading-relaxed">
+                Para la voz más especial que ilumina mis días con su música
+            </p>
+        </header>
+
+        <!-- ZONA INTERACTIVA INICIAL: Botón central con icono y texto "Pulse aquí" -->
+        <section id="trigger-section" class="my-4 flex flex-col items-center justify-center transition-all duration-500">
+            <button
+                id="reveal-btn"
+                type="button"
+                aria-label="Pulse aquí para abrir la carta musical"
+                class="vinyl-btn-wrapper focus:outline-none group"
+            >
+                <span class="pulse-ring"></span>
+                <span class="pulse-ring"></span>
+
+                <div class="vinyl-disc">
+                    <div class="vinyl-label">
+                        <!-- Icono de corazón con nota musical integrada -->
+                        <svg class="w-8 h-8 text-amber-100 heartbeat-icon mb-0.5 drop-shadow" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span class="text-[11px] font-semibold uppercase tracking-wider text-white leading-tight drop-shadow-sm">
+                            Pulse aquí
+                        </span>
+                    </div>
+                </div>
+            </button>
+
+            <span class="mt-5 text-xs text-amber-200/75 tracking-wide animate-pulse">
+                ✨ Toca el disco para escuchar tu mensaje ✨
+            </span>
+        </section>
+
+        <!-- CARTA DESPLEGABLE (Oculta inicialmente, se revela con animación al pulsar) -->
+        <article id="message-card" class="hidden w-full love-letter-card p-6 sm:p-8 text-center mt-1">
+            <!-- Adorno superior de la carta -->
+            <div class="flex items-center justify-center gap-3 text-rose-500 mb-4">
+                <span class="text-lg">𝄞</span>
+                <div class="w-10 h-10 rounded-full bg-rose-100 border border-rose-200 flex items-center justify-center shadow-inner">
+                    <svg class="w-5 h-5 text-rose-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                    </svg>
+                </div>
+                <span class="text-lg">𝄢</span>
+            </div>
+
+            <!-- Frase principal solicitada -->
+            <blockquote class="relative">
+                <p class="font-serif-romantic italic text-xl sm:text-2xl font-semibold text-rose-950 leading-relaxed">
+                    “De todas las canciones que he escuchado en mi vida, tu voz sigue siendo mi melodía favorita.”
+                </p>
+            </blockquote>
+
+            <!-- Separador dorado -->
+            <div class="gold-divider w-3/4 mx-auto my-6"></div>
+
+            <!-- Firma / Cierre destacado solicitado -->
+            <div class="pt-1">
+                <p class="font-serif-romantic text-2xl sm:text-[26px] font-bold text-rose-700 tracking-wide">
+                    Te quiero mucho mi Biscoshito ❤️
+                </p>
+            </div>
+
+            <!-- Botón sutil para volver a lanzar lluvia de corazones y notas -->
+            <button
+                id="replay-effect-btn"
+                type="button"
+                class="mt-6 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-rose-700 bg-rose-100/80 hover:bg-rose-200/80 active:scale-95 transition border border-rose-200"
+            >
+                <span>🎶</span>
+                <span>Más notas y amor</span>
+            </button>
+        </article>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bgContainer = document.getElementById('bg-notes-container');
+            const revealBtn = document.getElementById('reveal-btn');
+            const triggerSection = document.getElementById('trigger-section');
+            const messageCard = document.getElementById('message-card');
+            const replayEffectBtn = document.getElementById('replay-effect-btn');
+
+            // 1. Generar notas musicales flotantes sutiles en el fondo (ligero y fluido)
+            const bgSymbols = ['♪', '♫', '♬', '♩', '𝄞', '♡'];
+            const totalBgNotes = 16;
+
+            for (let i = 0; i < totalBgNotes; i++) {
+                const note = document.createElement('span');
+                note.className = 'floating-bg-note';
+                note.textContent = bgSymbols[i % bgSymbols.length];
+
+                const leftPos = Math.random() * 96;
+                const size = 16 + Math.random() * 18;
+                const duration = 9 + Math.random() * 10;
+                const delay = Math.random() * -15;
+
+                note.style.left = `${leftPos}%`;
+                note.style.fontSize = `${size}px`;
+                note.style.animationDuration = `${duration}s`;
+                note.style.animationDelay = `${delay}s`;
+
+                bgContainer.appendChild(note);
+            }
+
+            // 2. Melodía romántica suave sintetizada con Tone.js (sin descargar MP3 pesados)
+            async function playRomanticChime() {
+                try {
+                    if (typeof Tone === 'undefined') return;
+                    await Tone.start();
+
+                    const synth = new Tone.PolySynth(Tone.Synth, {
+                        oscillator: { type: 'sine' },
+                        envelope: {
+                            attack: 0.04,
+                            decay: 0.6,
+                            sustain: 0.25,
+                            release: 1.8
+                        }
+                    }).toDestination();
+
+                    synth.volume.value = -10;
+
+                    // Arpegio cálido en Fa Mayor / Re menor romántico
+                    const now = Tone.now();
+                    const notes = [
+                        { note: 'F4', time: 0, dur: '4n' },
+                        { note: 'A4', time: 0.16, dur: '4n' },
+                        { note: 'C5', time: 0.32, dur: '4n' },
+                        { note: 'E5', time: 0.48, dur: '2n' },
+                        { note: 'G5', time: 0.72, dur: '2n' },
+                        { note: 'F5', time: 1.05, dur: '1n' }
+                    ];
+
+                    notes.forEach(item => {
+                        synth.triggerAttackRelease(item.note, item.dur, now + item.time);
+                    });
+                } catch (err) {
+                    // Si el navegador bloquea el audio, la experiencia visual continúa sin interrupciones
+                }
+            }
+
+            // 3. Explosión de partículas de corazones y notas musicales
+            function spawnCelebrationParticles(originX, originY, count = 34) {
+                const particles = ['❤️', '🎶', '🎵', '💖', '✨', '🎼', '💕'];
+
+                for (let i = 0; i < count; i++) {
+                    const el = document.createElement('span');
+                    el.className = 'burst-particle';
+                    el.textContent = particles[Math.floor(Math.random() * particles.length)];
+
+                    const size = 16 + Math.random() * 16;
+                    el.style.fontSize = `${size}px`;
+                    el.style.left = `${originX}px`;
+                    el.style.top = `${originY}px`;
+
+                    document.body.appendChild(el);
+
+                    // Trayectoria parabólica suave hacia afuera y arriba
+                    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
+                    const velocity = 85 + Math.random() * 145;
+                    const destX = Math.cos(angle) * velocity;
+                    const destY = Math.sin(angle) * velocity - 75;
+                    const rotation = (Math.random() - 0.5) * 320;
+                    const duration = 1100 + Math.random() * 750;
+
+                    const animation = el.animate([
+                        {
+                            transform: 'translate(-50%, -50%) scale(0.3) rotate(0deg)',
+                            opacity: 1
+                        },
+                        {
+                            transform: `translate(calc(-50% + ${destX * 0.65}px), calc(-50% + ${destY * 0.65}px)) scale(1.15) rotate(${rotation * 0.5}deg)`,
+                            opacity: 1,
+                            offset: 0.45
+                        },
+                        {
+                            transform: `translate(calc(-50% + ${destX}px), calc(-50% + ${destY + 60}px)) scale(0.75) rotate(${rotation}deg)`,
+                            opacity: 0
+                        }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                        fill: 'forwards'
+                    });
+
+                    animation.onfinish = () => el.remove();
+                }
+            }
+
+            // 4. Evento principal al pulsar el icono central
+            let isOpened = false;
+
+            revealBtn.addEventListener('click', (e) => {
+                if (isOpened) return;
+                isOpened = true;
+
+                // Obtener coordenadas del toque o del centro del botón
+                const rect = revealBtn.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                // Sonido suave + partículas
+                playRomanticChime();
+                spawnCelebrationParticles(centerX, centerY, 38);
+
+                // Ocultar botón suavemente y desplegar la carta
+                triggerSection.classList.add('fade-out-scale');
+
+                setTimeout(() => {
+                    triggerSection.classList.add('hidden');
+                    messageCard.classList.remove('hidden');
+
+                    // Forzar reflow para que la animación CSS se ejecute limpia
+                    void messageCard.offsetWidth;
+                    messageCard.classList.add('revealed');
+                }, 380);
+            });
+
+            // 5. Permitir repetir la lluvia de notas y corazones desde la carta
+            replayEffectBtn.addEventListener('click', () => {
+                const rect = replayEffectBtn.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                playRomanticChime();
+                spawnCelebrationParticles(centerX, centerY, 28);
+            });
+        });
+    </script>
+</body>
+</html>
